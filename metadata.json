@@ -1,0 +1,5 @@
+{
+  "name": "FGA Omni-Assistant Command Center",
+  "description": "An AI-powered web application for federal government advisors to source, analyze, and match government RFPs with client capabilities using the Gemini API. This command center provides tools for strategic keyword analysis, fit-gap reviews, email drafting, and sourcing active RFPs.",
+  "requestFramePermissions": []
+}
