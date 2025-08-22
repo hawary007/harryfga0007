@@ -2,11 +2,15 @@
 import { GoogleGenAI } from "@google/genai";
 import { Command, CommandId, UploadedFile } from '../types';
 
-if (!process.env.API_KEY) {
-  throw new Error("API_KEY environment variable not set");
+const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
+
+if (!API_KEY) {
+  console.warn(
+    "VITE_GEMINI_API_KEY environment variable not set. Please add it to your .env.local file.",
+  );
 }
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+const ai = API_KEY ? new GoogleGenAI({ apiKey: API_KEY }) : null;
 
 const fileToGenerativePart = async (file: UploadedFile) => {
   return {
@@ -66,7 +70,13 @@ export const runCommand = async (
   inputs: Record<string, string>,
   files: Record<string, UploadedFile>
 ): Promise<AsyncIterable<string>> => {
-    
+
+  if (!ai) {
+    throw new Error(
+      "Missing VITE_GEMINI_API_KEY. Set it in your environment to use this service.",
+    );
+  }
+
   const promptParts = await buildPrompt(command, inputs, files);
   
   const model = ai.models['gemini-2.5-flash'];
