@@ -29,7 +29,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({ id, accept, file, onFile
 
   const handleFile = useCallback(async (selectedFile: File | null) => {
     if (selectedFile) {
-      if (!accept.some(type => selectedFile.name.endsWith(type))) {
+      if (!accept.some(type => selectedFile.name.toLowerCase().endsWith(type.toLowerCase()))) {
         alert(`Invalid file type. Please upload one of: ${accept.join(', ')}`);
         return;
       }
