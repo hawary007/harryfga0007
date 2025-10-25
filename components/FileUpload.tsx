@@ -1,5 +1,5 @@
 
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import { UploadedFile } from '../types';
 import { FileIcon } from './icons/FileIcon';
 import { UploadIcon } from './icons/UploadIcon';
@@ -26,6 +26,7 @@ const toBase64 = (file: File): Promise<string> =>
 
 export const FileUpload: React.FC<FileUploadProps> = ({ id, accept, file, onFileChange }) => {
   const [isDragging, setIsDragging] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const handleFile = useCallback(async (selectedFile: File | null) => {
     if (selectedFile) {
@@ -78,6 +79,8 @@ export const FileUpload: React.FC<FileUploadProps> = ({ id, accept, file, onFile
   const onRemoveFile = () => {
     onFileChange(id, null);
   };
+
+  const dragHandlers = { onDragEnter, onDragLeave, onDragOver, onDrop };
   
   if (file) {
     return (
@@ -95,16 +98,16 @@ export const FileUpload: React.FC<FileUploadProps> = ({ id, accept, file, onFile
 
   return (
     <div
-      onDragEnter={onDragEnter}
-      onDragLeave={onDragLeave}
-      onDragOver={onDragOver}
-      onDrop={onDrop}
-      className={`relative border-2 border-dashed rounded-md p-6 text-center transition-colors ${isDragging ? 'border-brand-blue bg-blue-900/20' : 'border-brand-gray-600 hover:border-brand-gray-500'}`}
+      onClick={() => inputRef.current?.click()}
+      onKeyDown={e => (e.key === 'Enter' || e.key === ' ') && inputRef.current?.click()}
+      tabIndex={0}
+      {...dragHandlers}
+      className={`border-2 border-dashed rounded-md p-6 text-center transition-colors ${isDragging ? 'border-brand-blue bg-blue-900/20' : 'border-brand-gray-600 hover:border-brand-gray-500'}`}
     >
       <input
+        ref={inputRef}
         type="file"
-        id={`file-input-${id}`}
-        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+        className="sr-only"
         onChange={onFileSelect}
         accept={accept.join(',')}
       />
