@@ -20,7 +20,7 @@ const fileToGenerativePart = async (file: UploadedFile) => {
 const MASTER_SYSTEM_PROMPT = `You are the FGA Omni-Assistant, a sophisticated AI specialized in U.S. Federal Government procurement. Your purpose is to assist federal government advisors and procurement specialists. You must be professional, analytical, and precise. Your outputs should be well-structured, clear, and ready for a professional business context. Do not use emojis. Respond in Markdown format.`;
 
 
-const buildPrompt = async (command: Command, inputs: Record<string, string>, files: Record<string, UploadedFile>): Promise<any[]> => {
+export const buildPrompt = async (command: Command, inputs: Record<string, string>, files: Record<string, UploadedFile>): Promise<any[]> => {
   let userPrompt = `Command: ${command.id}\n`;
 
   for (const key in inputs) {
@@ -33,9 +33,9 @@ const buildPrompt = async (command: Command, inputs: Record<string, string>, fil
       const file = files[key];
       const filePart = await fileToGenerativePart(file);
       const label = command.files?.find(f => f.id === key)?.label || 'Document';
-      parts.unshift({text: `--- START ${label.toUpperCase()} ---\n`});
-      parts.push({text: `\n--- END ${label.toUpperCase()} ---\n`});
-      parts.splice(parts.length -1, 0, filePart);
+      parts.push({ text: `--- START ${label.toUpperCase()} ---\n` });
+      parts.push(filePart);
+      parts.push({ text: `\n--- END ${label.toUpperCase()} ---\n` });
   }
 
   let specificInstruction = '';
